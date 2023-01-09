@@ -5,48 +5,44 @@ const fs = require('fs');
 class cartContainer {
     constructor (name) {
         this.path =`./${name}.txt`;
-        this.id = 1;
-        this.carritos = [];
-        this.timestamp = new Date().toLocaleString();
-        fs.writeFileSync(`./${name}.txt`, '[]');
-    }
+        this.cartCollection = [];
+    };
 
-    save = async (item) => {
+    addCart = async (item) => {
         const fileContent = await fs.promises.readFile(this.path, 'utf-8');
-        const fileObj = JSON.parse(fileContent);
-        item.id = this.id;
-        item.timestamp = this.timestamp;
-        fileObj.push({ id: this.id, timestamp: this.timestamp, ...item, });
-        await fs.promises.writeFile(this.path, JSON.stringify(fileObj, null, 2));
-        this.id ++;
 
-        return item.id;
-    }
-
-    getById = async (id) => {
-        const fileContent = await fs.promises.readFile(this.path, 'utf-8');
         const fileObj = JSON.parse(fileContent);
 
-        const item = fileObj.find(element => element.id === id);
 
-        return item ? item : null;
-    }
+        let newId = Object.keys(fileObj).length + 1;
+        console.log(newId);
+        const time = new Date().toLocaleString();
+        this.cartCollection.push({id: newId, timestamp: time, ...item});
+        console.log(this.cartCollection);
 
-    updateById = async (id, newData) => {
+        fs.writeFileSync(`${this.path}`, JSON.stringify(this.cartCollection));
+        return newId;
+    };
+
+    getCartById = async (id) => {
+        const fileContent = await fs.promises.readFile(this.path, 'utf-8');
+        const fileObj = JSON.parse(fileContent);
+
+        const cart = fileObj.find(element => element.id === id);
+
+        return cart ? cart : null;
+    };
+
+    updateCartById = async (id, newData) => {
         const fileContent = await fs.promises.readFile(this.path, 'utf-8');
         const fileObj = JSON.parse(fileContent);
         
         const index = fileObj.findIndex(element => element.id === id);
         
         fileObj[index].timestamp = newData.timestamp;
-        fileObj[index].name = newData.name;
-        fileObj[index].descripcion = newData.descripcion;
-        fileObj[index].code = newData.code;
-        fileObj[index].photo = newData.photo;
-        fileObj[index].stock = newData.stock;
+        fileObj[index].products = newData.products;
 
         await fs.promises.writeFile(this.path, JSON.stringify(fileObj, null, 2));
-
     }
 
     getAll = async () => {

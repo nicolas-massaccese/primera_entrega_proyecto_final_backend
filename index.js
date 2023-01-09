@@ -28,8 +28,10 @@ b. Realizar una aplicación frontend sencilla, utilizando HTML/CSS/JS ó algu�
 */
 
 const Container = require('./fileContainer.js');
-
 const productsList = new Container('products');
+
+const cartContainer = require('./cartContainer.js');
+const cartList = new cartContainer('cart');
 
 const express = require('express');
 
@@ -105,16 +107,14 @@ productsRouter.delete('/:id', async (req, res) =>{
 });
 
 
-// const cartList = new Container('cart');
 
 
-// cartRouter.post('/', async (req, res) => {
-//     const cart = req.body;
-    
-//     const id = await cartList.save(cart);
+cartRouter.post('/', async (req, res) => {
+    const cart = req.body;
+    const id = await cartList.addCart(cart);
 
-//     res.send(id.toString());        
-// });
+    res.send(id.toString());        
+});
 
 // cartRouter.post('/:id/productos/:id_prod', async (req, res) => {
 //     const carttId = req.params.id_prod;
