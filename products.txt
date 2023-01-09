@@ -1,6 +1,18 @@
 [
   {
+    "id": 1,
+    "timestamp": "8/1/2023, 23:15:56",
     "name": "zapato",
+    "descripcion": "Mochila Unisex",
+    "code": "EAN",
+    "photo": "",
+    "price": 3300,
+    "stock": 5
+  },
+  {
+    "id": 2,
+    "timestamp": "8/1/2023, 23:15:56",
+    "name": "cartera",
     "descripcion": "Mochila Unisex",
     "code": "EAN",
     "photo": "",

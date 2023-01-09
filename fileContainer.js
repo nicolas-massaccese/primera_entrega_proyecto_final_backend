@@ -5,8 +5,8 @@ const fs = require('fs');
 class Container {
     constructor (name) {
         this.path =`./${name}.txt`;
-        // this.id = 1;
-        // this.timestamp = new Date().toLocaleString();
+        this.id = 1;
+        this.timestamp = new Date().toLocaleString();
         fs.writeFileSync(`./${name}.txt`, '[]');
     }
 
