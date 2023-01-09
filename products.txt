@@ -1,0 +1,10 @@
+[
+  {
+    "name": "zapato",
+    "descripcion": "Mochila Unisex",
+    "code": "EAN",
+    "photo": "",
+    "price": 3300,
+    "stock": 5
+  }
+]
