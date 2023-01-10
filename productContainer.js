@@ -2,7 +2,7 @@
 const fs = require('fs');
 
 
-class Container {
+class productContainer {
     constructor (name) {
         this.path =`./${name}.txt`;
         this.id = 1;
@@ -67,4 +67,4 @@ class Container {
     }
 }
 
-module.exports = Container;
+module.exports = productContainer;
