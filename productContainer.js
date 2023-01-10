@@ -7,7 +7,7 @@ class Container {
         this.path =`./${name}.txt`;
         this.id = 1;
         this.timestamp = new Date().toLocaleString();
-        fs.writeFileSync(`./${name}.txt`, '[]');
+        //fs.writeFileSync(`./${name}.txt`, '[]');
     }
 
     save = async (item) => {
@@ -61,6 +61,7 @@ class Container {
         const updatedFileObj = fileObj.filter(element => element.id !== id);
         await fs.promises.writeFile(this.path, JSON.stringify(updatedFileObj, null, 2));
     }
+
     deleteAll = async () => {
         await fs.promises.writeFile(this.path, '[]');
     }

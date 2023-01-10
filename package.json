@@ -1,14 +1,21 @@
 {
-  "name": "massaccese_nicolas",
+  "name": "nico",
   "version": "1.0.0",
-  "description": "",
+  "description": "PreEntrega",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicolas-massaccese/primer_entrega_proy_final_backend.git"
+  },
+  "author": "Nicolas M",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nicolas-massaccese/primer_entrega_proy_final_backend/issues"
+  },
+  "homepage": "https://github.com/nicolas-massaccese/primer_entrega_proy_final_backend#readme",
   "dependencies": {
     "express": "^4.18.2"
   }

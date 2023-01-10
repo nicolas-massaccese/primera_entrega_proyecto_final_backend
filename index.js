@@ -27,7 +27,7 @@ b. Realizar una aplicación frontend sencilla, utilizando HTML/CSS/JS ó algu�
 5. Realizar la prueba de funcionalidad completa en el ámbito local (puerto 8080) y en glitch.com
 */
 
-const Container = require('./fileContainer.js');
+const Container = require('./productContainer.js');
 const productsList = new Container('products');
 
 const cartContainer = require('./cartContainer.js');
@@ -43,21 +43,32 @@ app.use(express.json());
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
-
 const productsRouter = Router();
+app.use('/api/products', productsRouter);
+
 const cartRouter = Router();
-
-
+app.use('/api/cart', cartRouter);
 
 const administrator = true
 
+app.get('/*', async (req, res) =>{
+    res.status(403).send({ error : -1, descripcion: 'Ruta erronea !!' });
+});
+app.put('/*', async (req, res) =>{
+    res.status(403).send({ error : -1, descripcion: 'Ruta erronea !!' });
+});
+app.post('/*', async (req, res) =>{
+    res.status(403).send({ error : -1, descripcion: 'Ruta erronea !!' });
+});
+app.delete('/*', async (req, res) =>{
+    res.status(403).send({ error : -1, descripcion: 'Ruta erronea !!' });
+});
 
 
 productsRouter.get('/', async (req, res) =>{
     const products = await productsList.getAll();
     res.json(products);
 });
-
 
 productsRouter.get('/:id', async (req, res) =>{
     const productId = req.params.id;
@@ -106,53 +117,95 @@ productsRouter.delete('/:id', async (req, res) =>{
     res.json(products);
 });
 
+// --- DELETE: '/:id/productos/:id_prod' - Eliminar un producto del carrito por su id de carrito y de producto.
+cartRouter.delete('/:id/productos/:id_prod', async (req, res) => {
+    const cartId = req.params.id;
+    const prodId = req.params.id_prod;
+    const cart = await cartList.getCartById(Number(cartId));
+    if (cart == null) {
+        res.status(400).send(`No se encontro el carrito con ID: ${cartId}`);
+        return;
+    }
+    let prodInCart = cart.products;
+    let indexItem = prodInCart.findIndex(element => element.id == prodId);
+    if (indexItem == -1) {
+        res.status(400).send(`El producto con ID: ${prodId} no se encuentra en el carrito.`);
+        return;
+    } else {
+        prodInCart.splice(indexItem, 1);
+        cart.products = prodInCart;
+        await cartList.updateCartById(cartId, cart);
+        res.json(cart);
+        return;
+    }
+});
 
+// --- POST: '/:id/productos/:id_prod' - Para incorporar productos al carrito por su id de producto.
+cartRouter.post('/:id/productos/:id_prod', async (req, res) => {
+    const cartId = req.params.id;
+    const prodId = req.params.id_prod;
 
+    const cart = await cartList.getCartById(Number(cartId));
+    if (cart == null) {
+        res.status(400).send(`No se encontro el carrito con ID: ${cartId}`);
+        return;
+    }
+
+    const product = await productsList.getById(Number(prodId));
+    if (product == null){
+        res.status(400).send(`No se encontro producto para agrgar con ID: ${prodId}`);
+        return;
+    }
+    
+    let prodInCart = cart.products;
+    let indexItem = prodInCart.findIndex(element => element.id == prodId);
+
+    if (indexItem == -1) {
+        prodInCart.push(product);
+        cart.products = prodInCart;
+        await cartList.updateCartById(cartId, cart);
+        res.json(cart);
+        return;
+    } else {
+        prodInCart[indexItem].stock = prodInCart[indexItem].stock + 1;
+        cart.products = prodInCart;
+        await cartList.updateCartById(cartId, cart);
+        res.json(cart);
+        return;
+    }
+});
+
+// --- GET: '/:id/productos' - Me permite listar todos los productos guardados en el carrito.
+cartRouter.get('/:id/products', async (req, res) =>{
+    const cartId = req.params.id;
+    const cart = await cartList.getCartById(Number(cartId));
+
+    if (cart != null) {
+        const arrayProducts = cart.products;
+        res.json(arrayProducts);
+    } else {
+        res.status(400).send(`No se encontro el carrito con ID: ${cartId}`);
+    }
+});
 
 cartRouter.post('/', async (req, res) => {
     const cart = req.body;
     const id = await cartList.addCart(cart);
-
     res.send(id.toString());        
 });
 
-// cartRouter.post('/:id/productos/:id_prod', async (req, res) => {
-//     const carttId = req.params.id_prod;
-//     if (isNaN(carttId)) {
-//         res.status(400).send(`${carttId} no es un número`);
-//         return;
-//     }
-//     let cart = await cartList.getById(Number(carttId));
-//     res.json(cart);      
-// });
+cartRouter.delete('/:id', async (req, res) => {
+    const carttId = req.params.id;
+    const cartDeleted = await cartList.deleteById(Number(carttId));
+    if(cartDeleted != null){
+        res.json(cartDeleted); 
+    } else {
+        res.status(403).send({ error : -1, descripcion: `ID: ${carttId} de carrito a eliminar inexistente` }); 
+    }
+});
 
-// cartRouter.delete('/:id', async (req, res) => {
-//     const carttId = req.params.id;
-//     if (isNaN(carttId)) {
-//         res.status(400).send(`${carttId} no es un número`);
-//         return;
-//     }
-//     const cart = await cartList.deleteById(Number(carttId));
-//     res.json(cart);        
-// });
-
-// cartRouter.get('/:id/productos', async (req, res) =>{
-//     const carttId = req.params.id;
-//     if (isNaN(carttId)) {
-//         res.status(400).send(`${carttId} no es un número`);
-//         return;
-//     }
-//     let cart = await cartList.getById(Number(carttId));
-//     res.json(cart);
-// });
-
-
-app.use('/api/products', productsRouter);
-
-app.use('/api/cart', cartRouter);
 
 const PORT = 8080;
-
 app.listen(PORT, () => console.log(`Listening in port ${PORT}`));
 
 

@@ -10,9 +10,7 @@ class cartContainer {
 
     addCart = async (item) => {
         const fileContent = await fs.promises.readFile(this.path, 'utf-8');
-
         const fileObj = JSON.parse(fileContent);
-
 
         let newId = Object.keys(fileObj).length + 1;
         console.log(newId);
@@ -39,8 +37,13 @@ class cartContainer {
         
         const index = fileObj.findIndex(element => element.id === id);
         
-        fileObj[index].timestamp = newData.timestamp;
-        fileObj[index].products = newData.products;
+        if(index != -1){
+            fileObj[index].timestamp = newData.timestamp;
+            fileObj[index].products = newData.products;
+        } else {
+            fileObj[0].timestamp = newData.timestamp;
+            fileObj[0].products = newData.products;
+        }
 
         await fs.promises.writeFile(this.path, JSON.stringify(fileObj, null, 2));
     }
@@ -54,10 +57,16 @@ class cartContainer {
     deleteById = async (id) => {
         const fileContent = await fs.promises.readFile(this.path, 'utf-8');
         const fileObj = JSON.parse(fileContent);
+        let deletedObj = null;
 
-        const updatedFileObj = fileObj.filter(element => element.id !== id);
-        await fs.promises.writeFile(this.path, JSON.stringify(updatedFileObj, null, 2));
+        const index = fileObj.findIndex(element => element.id === id);
+        if(index != -1){
+            deletedObj = fileObj.splice(index, 1);
+            await fs.promises.writeFile(this.path, JSON.stringify(fileObj, null, 2));
+        }
+        return deletedObj;
     }
+
     deleteAll = async () => {
         await fs.promises.writeFile(this.path, '[]');
     }
